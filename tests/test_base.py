@@ -1,5 +1,5 @@
-from project_name.base import NAME
+from gtasks_to_txt.base import NAME
 
 
 def test_base():
-    assert NAME == "project_name"
+    assert NAME == "gtasks_to_txt"
