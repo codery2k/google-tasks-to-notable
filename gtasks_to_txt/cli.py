@@ -1,28 +1,13 @@
-"""CLI interface for gtasks_to_txt project.
+import json
+from logging import error, info
+# from gtasks_to_txt.base import load_export, convert_gtasks_to_notes
+from .base import load_export
 
-Be creative! do whatever you want!
-
-- Install click or typer and create a CLI app
-- Use builtin argparse
-- Start a web application
-- Import things from your .base module
-"""
-
-
-def main():  # pragma: no cover
-    """
-    The main function executes on commands:
-    `python -m gtasks_to_txt` and `$ gtasks_to_txt `.
-
-    This is your program's entry point.
-
-    You can change this function to do whatever you want.
-    Examples:
-        * Run a test suite
-        * Run a server
-        * Do some other stuff
-        * Run a command line application (Click, Typer, ArgParse)
-        * List all available tasks
-        * Run an application (Flask, FastAPI, Django, etc.)
-    """
-    print("This will do something")
+def main():
+    
+    # get folder location from sys args
+    gtasks = load_export()
+    # info(json.dumps(gtasks, indent=4))
+    # notes = convert_gtasks_to_notes(gtasks)
+    # error(json.dumps(notes, indent=4))
+    

@@ -1,17 +1,29 @@
-"""
-gtasks_to_txt base module.
 
-This is the principal module of the gtasks_to_txt project.
-here you put your main classes and objects.
+import json
+import os
+from loguru import logger as log
 
-Be creative! do whatever you want!
 
-If you want to replace this with a Flask application run:
+def load_export(export_path="Takeout"):
+    with open(file= f"{export_path}/Tasks/tasks.json") as f:
+        tasks = load_lists(f)
+    log.info(json.dumps(len(tasks), indent=4))
+    return tasks
 
-    $ make init
+def load_lists(f):
+    tasks_json=json.loads(f.read())
+    lists = tasks_json["items"]
+    tasks = []
+    for list in lists:
+        items = loads_tasks(list)
+        tasks.extend(items)
+    return tasks
 
-and then choose `flask` as template.
-"""
+def loads_tasks(list):
+    list_title = list["title"]
+    items = list["items"]
+    for item in items:
+        # log.info(item.keys())
+        item["list"] = list_title
+    return items
 
-# example constant variable
-NAME = "gtasks_to_txt"
