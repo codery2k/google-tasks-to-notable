@@ -134,3 +134,4 @@ dmypy.json
 .vscode/
 .DS_Store
 Takeout/
+output/

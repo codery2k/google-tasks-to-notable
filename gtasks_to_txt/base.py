@@ -1,6 +1,9 @@
 import json
+from pathlib import Path
 from loguru import logger as log
 from . import config
+from slugify import slugify
+
 
 def load_export(export_path=config.EXPORT_PATH):
     with open(file=f"{export_path}/{config.EXPORT_FILE_PATH}") as f:
@@ -59,8 +62,10 @@ def set_child_notes(non_child_notes, child_notes):
     updated_notes = []
     updated_parent_notes = []
     parent_ids = [n["parent"] for n in child_notes]
-    unique_parent_ids = list(set(parent_ids))  
-    updated_notes.extend([n for n in non_child_notes if n["id"] not in unique_parent_ids])
+    unique_parent_ids = list(set(parent_ids))
+    updated_notes.extend(
+        [n for n in non_child_notes if n["id"] not in unique_parent_ids]
+    )
     parent_notes = [n for n in non_child_notes if n["id"] in unique_parent_ids]
     for child in child_notes:
         existing_parent_note_array = [
@@ -76,3 +81,36 @@ def set_child_notes(non_child_notes, child_notes):
             updated_parent_notes.append(parent_note)
     updated_notes.extend(updated_parent_notes)
     return updated_notes
+
+
+def write_notes_to_disk(notes):
+    output_path = ensure_dir(config.OUTPUT_PATH)
+    # log.error(type(output_path))
+    # log.debug(output_path)
+    file_paths = []
+    for note in notes:
+        file_path = create_note_file(note, output_path)
+        if file_path:
+            file_paths.append(file_path)
+    return file_paths
+
+
+def ensure_dir(path):
+    dir = Path(path)
+    if not dir.exists():
+        dir.mkdir(parents=True, exist_ok=True)
+    return dir
+
+
+def create_note_file(note, output_path):
+    file_path = None
+    note_title = note["title"]
+    if note_title and ("."!=note_title):
+        sanitized_title = slugify(note_title, max_length=30)
+        file_name = f"{output_path}/{sanitized_title}.txt"
+        with open(file_name, "w") as f:
+            f.write(json.dumps(note, indent=2))
+        # https://stackoverflow.com/questions/11348953/how-can-i-set-the-last-modified-time-of-a-file-from-python
+    return file_path
+
+
