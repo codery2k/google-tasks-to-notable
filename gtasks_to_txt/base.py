@@ -1,9 +1,9 @@
 import json
 from loguru import logger as log
+from . import config
 
-
-def load_export(export_path="Takeout"):
-    with open(file=f"{export_path}/Tasks/tasks.json") as f:
+def load_export(export_path=config.EXPORT_PATH):
+    with open(file=f"{export_path}/{config.EXPORT_FILE_PATH}") as f:
         tasks = load_lists(f)
     return tasks
 
