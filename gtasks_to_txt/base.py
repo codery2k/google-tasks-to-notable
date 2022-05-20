@@ -1,5 +1,4 @@
 import json
-import os
 from loguru import logger as log
 
 
@@ -28,16 +27,15 @@ def loads_tasks(list):
 
 
 def convert_gtasks_to_notes(gtasks):
-    notes = []
+    non_child_notes = []
     child_notes = []
     for task in gtasks:
         note = convert_gtask_to_notes(task)
         if note["parent"]:
             child_notes.append(note)
         else:
-            notes.append(note)
-    log.debug(json.dumps([child_notes[0], notes[0]], indent=4))
-    notes = set_child_notes(notes, child_notes)
+            non_child_notes.append(note)
+    notes = set_child_notes(non_child_notes, child_notes)
     return notes
 
 
@@ -57,19 +55,24 @@ def convert_gtask_to_notes(task):
     return note
 
 
-def set_child_notes(notes, child_notes):
+def set_child_notes(non_child_notes, child_notes):
     updated_notes = []
-    parent_ids = [n["parent"] for n in child_notes]
-    updated_notes.extend([n for n in notes if n["id"] not in parent_ids])
-    parent_notes = [n for n in notes if n["id"] in parent_ids]
     updated_parent_notes = []
-    # for child in child_notes:
-    #     parent_note = [n for n in parent_notes if n["id"] == child["parent"]][
-    #         0
-    #     ]
-    #     if "children" not in parent_note:
-    #         parent_note["children"] = []
-    #     parent_note["children"].append(child)
-    #     updated_parent_notes.append(parent_note)
-    
+    parent_ids = [n["parent"] for n in child_notes]
+    unique_parent_ids = list(set(parent_ids))  
+    updated_notes.extend([n for n in non_child_notes if n["id"] not in unique_parent_ids])
+    parent_notes = [n for n in non_child_notes if n["id"] in unique_parent_ids]
+    for child in child_notes:
+        existing_parent_note_array = [
+            n for n in updated_parent_notes if n["id"] == child["parent"]
+        ]
+        if existing_parent_note_array:
+            existing_parent_note = existing_parent_note_array[0]
+            existing_parent_note["children"].append(child)
+        else:
+            parent_note = [n for n in parent_notes if n["id"] == child["parent"]][0]
+            parent_note["children"] = []
+            parent_note["children"].append(child)
+            updated_parent_notes.append(parent_note)
+    updated_notes.extend(updated_parent_notes)
     return updated_notes
