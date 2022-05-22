@@ -83,13 +83,36 @@ def set_child_notes(non_child_notes, child_notes):
     return updated_notes
 
 
-def write_notes_to_disk(notes):
-    output_path = ensure_dir(config.OUTPUT_PATH)
-    # log.error(type(output_path))
-    # log.debug(output_path)
+def write_lists_to_disk(lists):
+    file_paths = []
+    for list_title in lists.keys():
+        output_path, output_completed_path = ensure_output_dirs(list_title)
+        notes = lists[list_title]
+        file_paths_for_list = write_notes_to_disk(
+            notes, output_path, output_completed_path
+        )
+        file_paths.append(file_paths_for_list)
+    return file_paths
+
+
+
+def ensure_output_dirs(list_title):
+    output_path = f"{config.OUTPUT_PATH}/{slugify(list_title, max_length=30)}"
+    output_completed_path = (
+        f"{config.OUTPUT_PATH}/{slugify(list_title, max_length=30)}/Completed"
+    )
+    ensure_dir(output_path)
+    ensure_dir(output_completed_path)
+    return output_path, output_completed_path
+
+
+def write_notes_to_disk(notes, output_path, output_completed_path):
     file_paths = []
     for note in notes:
-        file_path = create_note_file(note, output_path)
+        if note["isCompleted"]:
+            file_path = create_note_file(note, output_completed_path)
+        else:
+            file_path = create_note_file(note, output_path)
         if file_path:
             file_paths.append(file_path)
     return file_paths
@@ -105,12 +128,21 @@ def ensure_dir(path):
 def create_note_file(note, output_path):
     file_path = None
     note_title = note["title"]
-    if note_title and ("."!=note_title):
+    if note_title and ("." != note_title):
         sanitized_title = slugify(note_title, max_length=30)
         file_name = f"{output_path}/{sanitized_title}.txt"
         with open(file_name, "w") as f:
             f.write(json.dumps(note, indent=2))
+        file_path = file_name
         # https://stackoverflow.com/questions/11348953/how-can-i-set-the-last-modified-time-of-a-file-from-python
     return file_path
 
 
+def convert_notes_to_lists(notes):
+    lists = {}
+    for note in notes:
+        list_title = note["list"]
+        if list_title not in lists.keys():
+            lists[list_title] = []
+        lists[list_title].append(note)
+    return lists
