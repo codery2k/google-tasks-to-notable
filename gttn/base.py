@@ -83,36 +83,11 @@ def set_child_notes(non_child_notes, child_notes):
     return updated_notes
 
 
-def write_lists_to_disk(lists):
+def write_notes_to_disk(notes):
     file_paths = []
-    for list_title in lists.keys():
-        output_path, output_completed_path = ensure_output_dirs(list_title)
-        notes = lists[list_title]
-        file_paths_for_list = write_notes_to_disk(
-            notes, output_path, output_completed_path
-        )
-        file_paths.append(file_paths_for_list)
-    return file_paths
-
-
-
-def ensure_output_dirs(list_title):
-    output_path = f"{config.OUTPUT_PATH}/{slugify(list_title, max_length=30)}"
-    output_completed_path = (
-        f"{config.OUTPUT_PATH}/{slugify(list_title, max_length=30)}/Completed"
-    )
-    ensure_dir(output_path)
-    ensure_dir(output_completed_path)
-    return output_path, output_completed_path
-
-
-def write_notes_to_disk(notes, output_path, output_completed_path):
-    file_paths = []
+    ensure_dir(config.OUTPUT_PATH)
     for note in notes:
-        if note["isCompleted"]:
-            file_path = create_note_file(note, output_completed_path)
-        else:
-            file_path = create_note_file(note, output_path)
+        file_path = create_note_file(note)
         if file_path:
             file_paths.append(file_path)
     return file_paths
@@ -125,24 +100,43 @@ def ensure_dir(path):
     return dir
 
 
-def create_note_file(note, output_path):
+def create_note_file(note, output_path=config.OUTPUT_PATH):
     file_path = None
     note_title = note["title"]
     if note_title and ("." != note_title):
-        sanitized_title = slugify(note_title, max_length=30)
-        file_name = f"{output_path}/{sanitized_title}.txt"
+        file_name = f"{output_path}/{slugify(note_title, max_length=30)}.md"
         with open(file_name, "w") as f:
-            f.write(json.dumps(note, indent=2))
+            notable_note = convert_task_to_notable_note(note)
+            f.write(notable_note)
         file_path = file_name
-        # https://stackoverflow.com/questions/11348953/how-can-i-set-the-last-modified-time-of-a-file-from-python
     return file_path
 
 
-def convert_notes_to_lists(notes):
-    lists = {}
-    for note in notes:
-        list_title = note["list"]
-        if list_title not in lists.keys():
-            lists[list_title] = []
-        lists[list_title].append(note)
-    return lists
+def convert_task_to_notable_note(note):
+    tag = f'Completed/{note["list"]}' if note["isCompleted"] else f'{note["list"]}'
+    notable_note = get_notable_note_content(note, tag)
+    if "children" in note:
+        child_notes = note["children"]
+        for child_note in child_notes:
+            notable_note = notable_note + get_notable_child_note_content(child_note)
+    return notable_note
+
+
+def get_notable_child_note_content(child_note):
+    return f"""
+- [{"x" if child_note["isCompleted"] else " "}] {child_note["title"]}
+{child_note["details"] if child_note["details"] else ""}
+"""
+
+
+def get_notable_note_content(note, tag):
+    return f"""---
+title: {note["title"]}
+tags: [{tag}]
+created: {note["created"]}
+modified: {note["updated"]}
+---
+# {note["title"]}
+
+{note["details"] if note["details"] else ""}
+"""
