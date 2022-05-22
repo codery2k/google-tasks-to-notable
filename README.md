@@ -1,33 +1,31 @@
 
 # gtasks-to-txt
 
-A simple bash script to convert a Takeout for Google Tasks to text files
-
 <!-- [![codecov](https://codecov.io/gh/author_name/project_urlname/branch/main/graph/badge.svg?token=project_urlname_token_here)](https://codecov.io/gh/author_name/project_urlname)
 [![CI](https://github.com/author_name/project_urlname/actions/workflows/main.yml/badge.svg)](https://github.com/author_name/project_urlname/actions/workflows/main.yml) -->
 
-Command line tool to convert Google Tasks export to text files
+Command line tool to convert Google Tasks export to Notable notes
 
-## Install it from PyPI
+<!-- ## Install it from PyPI
 
 ```bash
-pip install gtasks_to_txt
-```
+pip install gttn
+``` -->
 
 ## Usage
 
 ```py
-from gtasks_to_txt import BaseClass
-from gtasks_to_txt import base_function
+from gttn import BaseClass
+from gttn import base_function
 
 BaseClass().base_method()
 base_function()
 ```
 
 ```bash
-$ python -m gtasks_to_txt
+$ python -m gttn
 #or
-$ gtasks_to_txt
+$ gttn
 ```
 
 <!-- ## Development

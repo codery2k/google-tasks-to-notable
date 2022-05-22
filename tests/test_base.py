@@ -1,5 +1,5 @@
-from gtasks_to_txt.base import NAME
+from gttn.base import NAME
 
 
 def test_base():
-    assert NAME == "gtasks_to_txt"
+    assert NAME == "gttn"

@@ -1,6 +1,6 @@
 # How to develop on this project
 
-gtasks_to_txt welcomes contributions from the community.
+gttn welcomes contributions from the community.
 
 **You need PYTHON3!**
 
@@ -8,9 +8,9 @@ This instructions are for linux base systems. (Linux, MacOS, BSD, etc.)
 ## Setting up your own fork of this repo.
 
 - On github interface click on `Fork` button.
-- Clone your fork of this repo. `git clone git@github.com:YOUR_GIT_USERNAME/gtasks_to_txt.git`
-- Enter the directory `cd gtasks_to_txt`
-- Add upstream repo `git remote add upstream https://github.com/codery2k/gtasks_to_txt`
+- Clone your fork of this repo. `git clone git@github.com:YOUR_GIT_USERNAME/gttn.git`
+- Enter the directory `cd gttn`
+- Add upstream repo `git remote add upstream https://github.com/codery2k/gttn`
 
 ## Setting up your own virtual environment
 

@@ -1,4 +1,4 @@
-"""Entry point for gtasks_to_txt."""
+"""Entry point for gttn."""
 
 from .cli import main  # pragma: no cover
 
