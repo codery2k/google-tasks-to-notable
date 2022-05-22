@@ -14,19 +14,19 @@ pip install gttn
 
 ## Usage
 
-```py
+<!-- ```py
 from gttn import BaseClass
 from gttn import base_function
 
 BaseClass().base_method()
 base_function()
-```
+``` -->
 
 ```bash
 $ python -m gttn
-#or
-$ gttn
 ```
+<!-- or
+$ gttn -->
 
 <!-- ## Development
 
